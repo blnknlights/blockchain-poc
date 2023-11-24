@@ -1,11 +1,8 @@
 import hashlib
 import json
 import requests
-
 from time import time
 from urllib.parse import urlparse
-from uuid import uuid4
-
 
 
 # Class responsible for managing the chain
@@ -13,11 +10,10 @@ class Blockchain(object):
     def __init__(self):
         self.chain = []
         self.current_transactions = []
-        self.nodes = set() # Ensure addition of new nodes is idempotent
+        self.nodes = set()  # Ensure addition of new nodes is idempotent
 
         # Create the genesis block
         self.new_block(previous_hash=1, proof=100)
-
 
     def register_node(self, address):
         """
@@ -30,8 +26,8 @@ class Blockchain(object):
         parsed_url = urlparse(address)
         self.nodes.add(parsed_url.netloc)
 
-
-    # Each Block has an index, a timestamp (in Unix time), a list of transactions,
+    # Each Block has an index, a timestamp (in Unix time),
+    # a list of transactions,
     # a proof and the hash of the previous Block.
     def new_block(self, proof, previous_hash=None):
         """
@@ -57,7 +53,6 @@ class Blockchain(object):
 
         return block
 
-
     def new_transaction(self, sender, recipient, amount):
         """
         Creates a new transaction to go into the next mined Block
@@ -74,8 +69,7 @@ class Blockchain(object):
             'amount': amount,
         })
 
-        return self.last_block['index'] + 1 # The next block to be mined.
-
+        return self.last_block['index'] + 1  # The next block to be mined.
 
     @staticmethod
     def hash(block):
@@ -91,17 +85,16 @@ class Blockchain(object):
 
         return hashlib.sha256(block_string).hexdigest()
 
-
     @property
     def last_block(self):
         # Returns the last Block in the chain
         return self.chain[-1]
 
-
     def proof_of_work(self, last_proof):
         """
         Simple Proof of Work Algorithm:
-         - Find a number p' such that hash(pp') contains leading 4 zeroes, where p is the previous p'
+         - Find a number p' such that hash(pp') contains leading 4 zeroes,
+         where p is the previous p'
          - p is the previous proof, and p' is the new proof
 
         :param last_proof: <int>
@@ -114,11 +107,11 @@ class Blockchain(object):
 
         return proof
 
-
     @staticmethod
     def valid_proof(last_proof, proof):
         """
-        Validates the Proof: Checks if hash(last_proof, proof) contains 4 leading zeroes
+        Validates the Proof: Checks if hash(last_proof, proof)
+        contains 4 leading zeroes
 
         :param last_proof: <int> Previous Proof
         :param proof: <int> Current Proof
@@ -130,10 +123,10 @@ class Blockchain(object):
 
         return guess_hash[:4] == "0000"
 
-
     def valid_chain(self, chain):
         """
-        Determine if a given blockchain is valid, by looping through each block
+        Determine if a given blockchain is valid,
+        by looping through each block
         and verifying both the hash and the proof.
 
         :param chain: <list> A blockchain
@@ -161,7 +154,6 @@ class Blockchain(object):
             current_index += 1
 
         return True
-
 
     def resolve_conflicts(self):
         """

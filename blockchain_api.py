@@ -1,7 +1,6 @@
+import sys
 from flask import Flask, jsonify, request
-from textwrap import dedent
 from uuid import uuid4
-
 from blockchain import Blockchain
 
 
@@ -75,7 +74,9 @@ def new_transaction():
         return 'Missing values', 400
 
     # Create a new Transaction
-    index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
+    index = blockchain.new_transaction(
+        values['sender'], values['recipient'], values['amount']
+    )
 
     response = {'message': f'Transaction will be added to Block {index}'}
 
@@ -101,7 +102,7 @@ def register_nodes():
     Example Post Request:
 
     {
-    	 "nodes" : ["http://localhost:5001"]
+         "nodes" : ["http://localhost:5001"]
     }
     """
     values = request.get_json()
@@ -141,4 +142,4 @@ def consensus():
 
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000)
+    app.run(host='localhost', port=sys.argv[1])
